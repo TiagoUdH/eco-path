@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import "../global.css";
+
 export default function RootLayout() {
     const { fontsLoaded } = useLoadFonts();
 
@@ -14,7 +16,11 @@ export default function RootLayout() {
                 translucent
             />
 
-            <Stack />
+            <Stack
+                screenOptions={{
+                    headerShown: false
+                }}
+            />
         </SafeAreaProvider>
     );
 }
