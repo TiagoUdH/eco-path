@@ -6,10 +6,13 @@ import { Button } from "@/components/Button";
 
 import { formatDistanceToNowStrict, nextMonday, set } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useRouter } from "expo-router";
 import { Fragment, useState } from "react";
 
 export default function Home() {
     const [isSolicited, setIsSolicited] = useState(false)
+
+    const router = useRouter()
 
     const now = new Date();
 
@@ -19,6 +22,10 @@ export default function Home() {
         locale: ptBR,
         addSuffix: true,
     });
+
+    function handleProfile() {
+        router.push("/profile")
+    }
 
     return (
         <SafeAreaView className="py-10 px-20 items-center justify-between flex-1 w-full">
@@ -55,7 +62,8 @@ export default function Home() {
             </View>
 
             <Button
-                title="Editar perfil"
+                title="Ver perfil"
+                onPress={handleProfile}
             />
         </SafeAreaView>
     )
