@@ -4,7 +4,15 @@ module.exports = {
   content: ["./src/app/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        blue: "#0020C7"
+      },
+      fontFamily: {
+        heading: "Roboto_700Bold",
+        body: "Roboto_400Regular",
+      },
+    },
   },
   plugins: [],
 }

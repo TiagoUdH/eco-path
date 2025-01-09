@@ -1,6 +1,6 @@
 import { useLoadFonts } from '@/hooks/useLoadFonts';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'react-native';
+import { ActivityIndicator, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import "../global.css";
@@ -16,11 +16,18 @@ export default function RootLayout() {
                 translucent
             />
 
-            <Stack
-                screenOptions={{
-                    headerShown: false
-                }}
-            />
+            {!fontsLoaded ? (
+                <View className="bg-blue flex-1 justify-center items-center">
+                    <ActivityIndicator className="text-white" />
+                </View>
+            ) : (
+                <Stack
+                    screenOptions={{
+                        headerShown: false
+                    }}
+                />
+            )}
+
         </SafeAreaProvider>
     );
 }
