@@ -6,8 +6,11 @@ import { Button } from "@/components/Button";
 
 import { formatDistanceToNowStrict, nextMonday, set } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Fragment, useState } from "react";
 
 export default function Home() {
+    const [isSolicited, setIsSolicited] = useState(false)
+
     const now = new Date();
 
     const nextMondayOn14 = set(nextMonday(now), { hours: 14 });
@@ -32,14 +35,21 @@ export default function Home() {
 
                 <Text className="text-center font-heading text-base">Bem vindo(a) de volta Maria</Text>
 
-                <Text className="text-center font-body text-zinc-400 text-base">Deseja solicitar o serviço de coleta?</Text>
+                {!isSolicited ? (
+                    <Fragment>
+                        <Text className="text-center font-body text-zinc-400 text-base">Deseja solicitar o serviço de coleta?</Text>
 
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    className="bg-blue p-4 rounded-full w-full max-w-[238px]"
-                >
-                    <Text className="text-xl font-heading text-white text-center">Solicitar</Text>
-                </TouchableOpacity>
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            className="bg-blue p-4 rounded-full w-full max-w-[238px]"
+                            onPress={() => setIsSolicited(true)}
+                        >
+                            <Text className="text-xl font-heading text-white text-center">Solicitar</Text>
+                        </TouchableOpacity>
+                    </Fragment>
+                ) : (
+                    <Text className="font-heading text-base text-center text-blue">Você solicitou o serviço de reciclagem com sucesso!</Text>
+                )}
 
                 <Text className="text-center font-body text-zinc-400 text-base">A nossa equipe fará a próxima coleta {difference}</Text>
             </View>
