@@ -5,28 +5,49 @@ import { Feather } from "@expo/vector-icons";
 
 import AvatarImg from "@/assets/avatar-example.png";
 import LogoImg from "@/assets/logo.png";
+import { UserContext } from "@/contexts/UserContext";
+import { api } from "@/services/api";
 import { useRouter } from "expo-router";
+import { useContext, useEffect, useState } from "react";
 
-const DATA = [
-    {
-        id: '1',
-        day: '20/07',
-        collectedDay: '22/07'
-    },
-    {
-        id: '2',
-        day: '07/07',
-        collectedDay: '13/07'
-    }
-];
+import { format, toZonedTime } from 'date-fns-tz';
 
+type Collect = {
+    id: number,
+    requester: number,
+    solicitation_time: string,
+    collection_time: string | null,
+    status: 'in_progress' | 'completed',
+}
 
 export default function Profile() {
     const router = useRouter()
 
+    const { user } = useContext(UserContext)
+
+    const [data, setData] = useState<Collect[]>([])
+
     function handleGoBack() {
         router.navigate("/home")
+    } // Importando as funções do date-fns-tz
+
+    function formatDate(date: Date | null): string {
+        if (!date) return "Data inválida";
+
+        const saoPauloTime = toZonedTime(date, 'America/Sao_Paulo');
+
+        return format(saoPauloTime, 'dd/MM/yyyy - HH:mm');
     }
+
+    async function fetchCollectRequests(){
+        const response = await api.get(`user/${user.id}/collections/`)
+
+        setData(response.data)
+    }
+
+    useEffect(() => {
+        fetchCollectRequests()
+    }, [])
 
     return (
         <SafeAreaView className="flex-1 pt-10 items-center gap-6">
@@ -45,29 +66,35 @@ export default function Profile() {
             />
 
             <View className="px-4 w-full gap-3">
-                <Text className="text-xl font-body">Nome: Maria</Text>
-                <Text className="text-xl font-body">Idade: 23</Text>
-                <Text className="text-xl font-body">Número: (35) 98765-1234</Text>
-                <View><Text className="text-xl font-body">Endereço: Rua das Flores, 123</Text>
-                    <Text className="text-xl font-body">Bairro Jardim das Rosas</Text></View>
+                <Text className="text-xl font-body">Nome: {user.first_name} {user.last_name}</Text>
+                <Text className="text-xl font-body">Idade: {user.age}</Text>
+                <Text className="text-xl font-body">Número: {user.phone}</Text>
+                <Text className="text-xl font-body">Endereço: Rua {user.address}</Text>
+                <Text className="text-xl font-body">Bairro: {user.neighborhood}</Text>
             </View>
 
             <View className="bg-blue flex-1 w-full p-8">
                 <Text className="text-base font-heading text-white mb-3">Últimas Solicitações</Text>
 
                 <FlatList
-                    data={DATA}
+                    data={data}
                     renderItem={({ item }) => (
                         <View className="bg-indigo-400 py-4 px-6 mb-6 gap-2">
-                            <Text className="text-white font-body">Dia {item.day}</Text>
+                            <Text className="text-white font-body">Dia {formatDate(new Date(item.solicitation_time))}</Text>
 
                             <View>
                                 <Text className="text-white font-body">Solicitado com sucesso!</Text>
-                                <Text className="text-white font-body">Recebido dia {item.collectedDay}</Text>
+                                <Text className="text-white font-body">
+                                    {item.collection_time != null ? (
+                                        `Coletado às ${formatDate(new Date(item.collection_time))}`
+                                    ) : (
+                                        "Ainda não coletado"
+                                    )}
+                                </Text>
                             </View>
                         </View>
                     )}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => String(item.id)}
                 />
             </View>
         </SafeAreaView>
